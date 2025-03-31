@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Add Items from Listbox with Total Price</title>
+        <link rel="stylesheet" href="mystyle.css">
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+        <style>
+            table {
+                width: 50%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                background-color: thistle;
+                justify-content: center;
+            }
+            table, th, td{
+                border: 1px solid black;
+            }
+            th, td{
+                padding: 10px;
+                text-align: center;
+            }
+            th{
+                background-color: #f2f2f2;
+            }
+            .btn-calc{
+                width: 50%;
+                font-size: 16px;
+                border-radius: 5px;
+            }
+            #Food{
+                width: 100%;
+                height: 140px;
+                font-size: 16px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="table">
+            <table>
+                <tr>
+                    <td colspan="3" align="center"> <h1> Menu </h1></td>
+                </tr>
+                <tr>
+                    <th>Foods</th>
+                    <th>Drinks</th>
+                    <th>Day</th>
+                </tr>
+                <tr>
+                    <td>
+                        <select class="Food" multiple>
+                            <option value="20000">Bún bò</option>
+                            <option value="18000">Hủ tiếu</option>
+                            <option value="17000">Bánh canh</option>
+                            <option value="19000">Phở bò</option>
+                            <option value="15000">Nuôi</option>
+                            <option value="12000">Bánh mì thịt</option>
+                            <option value="15000">Bánh cuốn</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="Drink" multiple>
+                            <option value="12000">Cafe đá</option>
+                            <option value="15000">Cafe sữa</option>
+                            <option value="13000">Chanh dây</option>
+                            <option value="12000">Chanh muối</option>
+                            <option value="14000">Xí muội</option>
+                            <option value="13000">Sữa tươi</option>
+                            <option value="17000">Cam vắt</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="radio" name="day" id="morning" value="1" />
+                        <label for="morning">Ban ngày</label><br />
+                        <input type="radio" name="day" id="dinner" value="2" />
+                        <label for="dinner">Ban đêm</label><br />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" align="center">
+                        <button class="btn-calc">Tính tiền</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table class="bill">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>            
+            </thead>
+            <tbody>
+
+           </tbody>
+           <tfoot>
+            <tr>
+                <td colspan="2">Total Price</td>
+                <td class="totalPrice">0</td>
+            </tr>
+           </tfoot>
+        </table>
+    </body>
+</html>
+<script>
+    $(document).ready(function(){
+        function updateTotalPrice(){
+            var total=0;
+            var day=$("input[name=day]:checked").val();
+            $('.bill tbody tr').each(function(){
+                var price=parseInt($(this).children('td').eq(2).text());
+                total += price;
+                if(day==2) {
+                    total=total*1.1;
+                }
+            });
+            $('.totalPrice').text(total.toFixed(0));
+        }
+        $('.btn-calc').on('click',function(){
+            $('.Food option:selected').each(function(){
+                var item=$(this).text();
+                var value=parseInt($(this).val());
+
+                var found=false;
+                $('.bill tbody tr').each(function(){
+                    var rowItem = $(this).find('td:first').text();
+                    if(rowItem===item){
+                        var quantityCell=$(this).children('td').eq(1);
+                        var priceCell=$(this).children('td').eq(2);
+                        var currentQuantity=parseInt(quantityCell.text());
+
+                        var newQuantity = currentQuantity+1;
+                        quantityCell.text(newQuantity);
+                        priceCell.text(newQuantity*value);
+                        found=true;
+                    }
+                });
+                if(found==false){
+                    $('.bill tbody').append('<tr><td>'+item+'</td><td>1</td><td>'+value+'</td></tr>');
+
+                }
+            });
+            $('.Drink option:selected').each(function(){
+                var itemDrink=$(this).text();
+                var valueDrink=parseInt($(this).val());
+
+                var found=false;
+                $('.bill tbody tr').each(function(){
+                    var rowItem = $(this).find('td:first').text();
+                    if(rowItem===itemDrink){
+                        var quantityCell=$(this).children('td').eq(1);
+                        var priceCell=$(this).children('td').eq(2);
+                        var currentQuantity=parseInt(quantityCell.text());
+
+                        var newQuantity = currentQuantity+1;
+                        quantityCell.text(newQuantity);
+                        priceCell.text(newQuantity*valueDrink);
+
+                        found=true;
+                    }
+                });
+
+                if(found==false){
+                    $('.bill tbody').append('<tr><td>'+itemDrink+'</td><td>1</td><td>'+valueDrink+'</td></tr>');
+                }
+            });
+            updateTotalPrice();
+        });
+    });
+</script>
